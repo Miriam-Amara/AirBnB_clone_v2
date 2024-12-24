@@ -30,7 +30,8 @@ class test_fileStorage(unittest.TestCase):
 
     def test_new(self):
         """ New object is correctly added to __objects """
-        new = BaseModel()
+        new_basemodel = BaseModel()
+        storage.new(new_basemodel)
         for obj in storage.all().values():
             temp = obj
         self.assertTrue(temp is obj)
@@ -62,12 +63,12 @@ class test_fileStorage(unittest.TestCase):
 
     def test_reload(self):
         """ Storage file is successfully loaded to __objects """
-        new = BaseModel()
-        storage.save()
+        new_basemodel = BaseModel()
+        storage.new(new_basemodel)
         storage.reload()
         for obj in storage.all().values():
             loaded = obj
-        self.assertEqual(new.to_dict()['id'], loaded.to_dict()['id'])
+        self.assertEqual(new_basemodel.to_dict()['id'], loaded.to_dict()['id'])
 
     def test_reload_empty(self):
         """ Load from an empty file """
@@ -96,8 +97,9 @@ class test_fileStorage(unittest.TestCase):
 
     def test_key_format(self):
         """ Key is properly formatted """
-        new = BaseModel()
-        _id = new.to_dict()['id']
+        new_basemodel = BaseModel()
+        _id = new_basemodel.to_dict()['id']
+        storage.new(new_basemodel)
         for key in storage.all().keys():
             temp = key
         self.assertEqual(temp, 'BaseModel' + '.' + _id)
@@ -107,3 +109,21 @@ class test_fileStorage(unittest.TestCase):
         from models.engine.file_storage import FileStorage
         print(type(storage))
         self.assertEqual(type(storage), FileStorage)
+
+    def test_all_cls(self):
+        """ Returns objects of a specified class """
+        new_basemodel = BaseModel()
+        storage.new(new_basemodel)
+        key = list(storage.all("BaseModel"))[0]
+        self.assertIn("BaseModel", key)
+
+    def test_delete_obj(self):
+        """ BaseModel object is deleted from __objects """
+        new_basemodel1 = BaseModel()
+        new_basemodel2 = BaseModel()
+        storage.new(new_basemodel1)
+        storage.new(new_basemodel2)
+        storage.delete(new_basemodel1)
+        obj_values = storage.all().values()
+        self.assertNotIn(new_basemodel1, obj_values)
+        self.assertIn(new_basemodel2, obj_values)
