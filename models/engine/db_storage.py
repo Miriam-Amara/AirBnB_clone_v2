@@ -31,7 +31,7 @@ class DBStorage:
 
     def __init__(self):
         """ Creates a database connection """
-        self.__engine = create_engine(url, pool_pre_ping=True)
+        self.__engine = create_engine(url, pool_pre_ping=True, echo=True)
         if os.getenv("HBNB_ENV") == "test":
             Base.metadata.drop_all(self.__engine)
 
