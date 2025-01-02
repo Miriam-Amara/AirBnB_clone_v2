@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 """
 This module provides DBStorage class for storing
 objects of AirBnB_clone system to a database.
@@ -24,6 +23,13 @@ database = os.getenv("HBNB_MYSQL_DB")
 url = f"mysql+mysqldb://{user}:{password}@{host}/{database}"
 
 
+
+# import logging
+
+# logging.basicConfig()
+# logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
+
+
 class DBStorage:
     """ Stores objects of the AirBnB_clone system in a database """
     __engine = None
@@ -31,39 +37,36 @@ class DBStorage:
 
     def __init__(self):
         """ Creates a database connection """
-        self.__engine = create_engine(url, pool_pre_ping=True, echo=True)
+        self.__engine = create_engine(url, pool_pre_ping=True)
         if os.getenv("HBNB_ENV") == "test":
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        """ Returns all objects of a given class or objects of all classes """
-        cls_obj = []
+        """ Returns all objects of the given class or objects of all classes """
+        objects = {}
         clsname = {
-            "Amenity": Amenity,
-            "City": City,
-            "Place": Place,
-            "Review": Review,
-            "State": State,
-            "User": User,
+            Amenity: "Amenity",
+            City: "City",
+            Place: "Place",
+            Review: "Review",
+            State: "State",
+            User: "User"
         }
         if cls == None:
-            for cls_name in clsname:
-                print(clsname[cls_name])
-                query = select(clsname[cls_name])
-                print("\n", query, "\n")
-                result = self.__session.scalars(query).all()
-                cls_obj.extend(result)
+            for cls in clsname:
+                query = select(cls)
+                # print("\n", query, "\n")
+                cls_objects = self.__session.scalars(query).all()
+                for obj in cls_objects:
+                    key = f"{clsname[cls]}.{obj.id}"
+                    objects[key] = obj
 
-        elif cls and cls in clsname:
-            query = select(clsname[cls])
-            result = self.__session.scalars(query).all()
-            cls_obj.extend(result)
-        
-        self.__session.close()
-        objects = {}
-        for obj in cls_obj:
-            key = f"{cls}.{obj.id}"
-            objects[key] = obj
+        elif cls in clsname:
+            query = select(cls)
+            cls_objects = self.__session.scalars(query).all()
+            for obj in cls_objects:
+                key = f"{clsname[cls]}.{obj.id}"
+                objects[key] = obj
 
         return objects
 
@@ -78,7 +81,6 @@ class DBStorage:
         except Exception as e:
             print(f"Failed to commit: {e}")
             self.__session.rollback()
-            self.__session.close()
 
     def delete(self, obj=None):
         """ Deletes an object from database """
@@ -94,21 +96,13 @@ class DBStorage:
             print(e)
             return
         
-        Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
-        scoped_sess = scoped_session(Session)
-        self.__session = scoped_sess()
+        self.__session = scoped_session(sessionmaker(bind=self.__engine, expire_on_commit=False))
+
+    def close(self):
+        """ closes the session """
+        self.__session.remove()
 
 
-
-        # Session = sessionmaker()
-        # self.__session = Session(bind=self.__engine)
-        
-        # if cls:
-        #     cls_obj = self.__session.query(cls).all()
-        # else:
-        #     for cls in Base.registry._class_registry.values():
-        #         if hasattr(cls, '__table__'):
-        #             all_objects = self.__session.query(cls.__name__).all()
 
 if __name__ == "__main__":
     storage = DBStorage()

@@ -1,6 +1,13 @@
 #!/usr/bin/python3
 """This module defines a class to manage file storage for hbnb clone"""
 import json
+from models.base_model import BaseModel
+from models.user import User
+from models.place import Place
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.review import Review
 
 
 class FileStorage:
@@ -10,10 +17,19 @@ class FileStorage:
 
     def all(self, cls=None):
         """Returns a dictionary of models currently in storage"""
+        classes = {
+            BaseModel: "BaseModel", 
+            User: "User",
+            Place: "Place",
+            State: "State",
+            City: "City",
+            Amenity: "Amenity",
+            Review: "Review"
+            }
         if cls:
             cls_objects = {}
             for key, obj in FileStorage.__objects.items():
-                if cls in key:
+                if cls in classes and classes[cls] in key:
                     cls_objects[key] = obj
             return cls_objects
         
@@ -34,14 +50,6 @@ class FileStorage:
 
     def reload(self):
         """Loads storage dictionary from file"""
-        from models.base_model import BaseModel
-        from models.user import User
-        from models.place import Place
-        from models.state import State
-        from models.city import City
-        from models.amenity import Amenity
-        from models.review import Review
-
         classes = {
                     'BaseModel': BaseModel, 'User': User, 'Place': Place,
                     'State': State, 'City': City, 'Amenity': Amenity,
@@ -64,3 +72,9 @@ class FileStorage:
             key = f"{obj.__class__.__name__}.{obj.id}"
             all_obj = self.all()
             del all_obj[key]
+
+    def close(self):
+        """
+        deserializing the JSON file to objects
+        """
+        self.reload()
