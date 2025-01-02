@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<HTML lang="en">
+<HEAD>
+    <META charset="UTF-8">
+    <META name="viewport" content="width=device-width, initial-scale=1.0">
+    <TITLE>HBNB</TITLE>
+</HEAD>
+<BODY>
+    {% if states is defined %}
+        <H1>States</H1>
+        {% for state in states %}
+            {% set state_name = state[0] %}
+            {% set state_id = state[1] %}
+        <UL>
+            <LI>{{ state_id }}: <B>{{ state_name }}</B></LI>
+        </UL>
+        {% endfor %}
+
+    {% elif result is defined %}
+        <H1>{{ result }}</H1>
+
+    {% elif obj is defined %}
+        <H1>States: {{ obj.name }}</H1>
+        <H3>Cities:</H3>
+        <UL>
+            {% for city in cities %}
+                {% set city_name = city[0] %}
+                {% set city_id = city[1] %}
+                <LI>{{city_id}}: <B>{{ city_name }}</B></LI>
+            {% endfor %}
+        </UL>
+    {% endif %}
+
+
+</BODY>
+</HTML>

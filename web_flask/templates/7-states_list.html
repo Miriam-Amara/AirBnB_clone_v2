@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<HTML lang="en">
+<HEAD>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <TITLE>Document</TITLE>
+</HEAD>
+<BODY>
+    <H1>States</H1>
+    {% for key, obj in all_states.items() %}
+        <UL>
+            <LI>{{ obj.id }}: <B>{{ obj.name }}</B></LI>
+        </UL>
+    {% endfor %}
+</BODY>
+</HTML>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<HTML lang="en">
+<HEAD>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <TITLE>Document</TITLE>
+</HEAD>
+<BODY>
+    <H1>States</H1>
+    {% for state, cities in state_cities.items() %}
+        <UL>
+            <LI>
+                {{ state.id }}: <B>{{ state.name }}</B>
+                    {% for city in cities %}
+                        {% set city_name = city[0] %}
+                        {% set city_id = city[1] %}
+                        <UL>
+                            <LI>
+                                {{ city_id }}: <B>{{ city_name }}</B>    
+                            </LI>
+                        </UL>
+                    {% endfor %}
+            </LI>
+        </UL>
+    {% endfor %}
+</BODY>
+</HTML>
