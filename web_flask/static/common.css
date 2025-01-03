@@ -52,17 +52,17 @@ body{
     margin-left: 2em;
 }
 
-.states, .amenities{
+.states, .amenity{
     height: 100%;
     padding: 0.5em 0 0 0;
     overflow: hidden;
 }
 
-.states:hover, .amenities:hover{
+.states:hover, .amenity:hover{
     overflow: visible;
 }
 
-.amenities{
+.amenity{
     border-left: 1px solid #DDD;
 }
 
@@ -100,6 +100,7 @@ body{
 }
 
 .article{
+    height: 100%;
     display: flex;
     flex-direction: column;
     padding: 2em;
@@ -164,6 +165,37 @@ body{
 .user{
     margin: 1em 0 1em 0;
 }
+
+
+/* ----- AMENITY AND REVIEW STYLE ----- */
+
+/* .collapse{
+    
+} */
+
+.amenities h2, .reviews h2{
+    font-size: 16px;
+    font-weight: 600;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid #DDD;
+    margin:4em 0 1em 0;
+    
+}
+
+.amenities ul, .reviews ul{
+    list-style: none;
+    padding-left: 0;
+}
+
+.reviews h3{
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.reviews p{
+    font-size: 12px;
+}
+
 
 
 

@@ -10,6 +10,7 @@ from models.state import State
 from models.amenity import Amenity
 
 from flask import Flask, render_template, request
+from math import ceil
 
 
 app = Flask(__name__)
@@ -66,10 +67,6 @@ def get_places(cls=Place, current_page=None, page_size=None):
                         }
         places[place.name] = place_attributes
         
-
-
-    # get two place objects at a time with list of tuples
-    # places = [(obj[i], obj[i+1]) for i in range(0, 6, 2)]
     return places, total_rows
 
 
@@ -80,24 +77,30 @@ def close_db_session(exception):
 
 
 @app.route("/hbnb", strict_slashes=False)
-def get_hbnb_homepage():
+def hbnb_homepage():
     """ """
     states = get_states()
     amenities = get_amenities()
     current_page = request.args.get('page', 1)
+    page_size = 10
 
     try:
         current_page = int(current_page)
-    except ValueError:
-        return "Invalid page number!", 400
-    places, total_rows = get_places(current_page=current_page, page_size=10)
+        places, total_rows = get_places(current_page=current_page, page_size=page_size)
+        total_pages = ceil(total_rows / page_size)
+        last_item = ceil(total_rows % page_size)
+    except Exception:
+        return "<h1>Page not found!</h1>", 400
     
     return render_template(
         "100-hbnb.html",
         states=states,
         amenities=amenities,
         places=places,
-        total_rows=total_rows
+        page=current_page,
+        page_size=page_size,
+        total_pages=total_pages,
+        last_item=last_item,
     )
 
 

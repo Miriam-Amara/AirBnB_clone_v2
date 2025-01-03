@@ -44,7 +44,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="col-4 col-lg-3 amenities">
+            <div class="col-4 col-lg-3 amenity">
                 <div class="headings">
                     <h3>Amenities</h3>
                     <h4>&nbsp;</h4>
@@ -64,17 +64,22 @@
         
 
         <!-- PLACES SECTION -->
-        <section class="container places border"> <!-- remove border -->
-            <h1>Places</h1>
-            <div class="row row-cols-1 row-cols-lg-2 g-5 mt-5 border"> <!-- remove border -->
+        <section class="container places"> <!-- remove border -->
+            <h1 id="places">Places</h1>
+            <div class="row row-cols-1 row-cols-lg-2 g-5 mt-5"> <!-- remove border -->
                 {% set place = places.keys() | list %}
-                {% for i in range(0, 10, 2) %}
+                {% for i in range(0, page_size, 2) %}
                     {% set place_name = place[i] %}
                     {% set attribute = places.get(place[i]) %}
-                    <article class="col border"> <!-- remove border -->
+                    {% if page == total_pages and (i > last_item or (i + 1) > last_item) %}
+                        {% set stop_iteration = True %}
+                    {% endif %}
+
+                    {% if not stop_iteration %}
+                    <article class="col"> <!-- remove border -->
                         <div class="article">
                             <div class="head">
-                                <div class="place_name"><h2>{{ place_name }}</h2></div>
+                                <div id="place{{ i }}" class="place_name"><h2>{{ place_name }}</h2></div>
                                 <div class="price">${{ attribute["price"] }}</div>
                             </div>
                             <div class="row row-cols-sm-3 info">
@@ -88,7 +93,7 @@
                                 <a data-bs-toggle="collapse" href="#collapse{{ i }}">read more</a>
                             </div>
                             <div id="collapse{{ i }}" class="collapse">
-                                <div class="amenity_list">
+                                <div class="amenities">
                                     <h2>Amenities</h2>
                                     <ul>
                                         {% for amenity in attribute["amenities"] %}
@@ -96,7 +101,7 @@
                                         {% endfor %}
                                     </ul>
                                 </div>
-                                <div class="review_list">
+                                <div class="reviews">
                                     {% set review = "Reviews" if attribute["reviews"] | length > 1 else "Review" %}
                                     <h2>{{ attribute["reviews"] | length }} {{ review }}</h2>
                                     <ul>
@@ -106,6 +111,8 @@
                                         </li>
                                         {% endfor %}
                                     </ul>
+                                    <div><a href="#place{{ i }}">go back to "{{ place_name }}"</a></div>
+                                    <div><a href="#places">Home</a></div>
                                 </div>
                             </div>
                         </div>
@@ -113,10 +120,10 @@
 
                     {% set place_name = place[i + 1] %}
                     {% set attribute = places.get(place[i + 1]) %}
-                    <article class="col border">
+                    <article class="col">  <!-- remove border -->
                         <div class="article">
                             <div class="head">
-                                <div class="place_name"><h2>{{ place_name }}</h2></div>
+                                <div id="place{{ i + 1 }}" class="place_name"><h2>{{ place_name }}</h2></div>
                                 <div class="price">${{ attribute["price"] }}</div>
                             </div>
                             <div class="row row-cols-sm-3 info">
@@ -130,7 +137,7 @@
                                 <a data-bs-toggle="collapse" href="#collapse{{ i + 1 }}">read more</a>
                             </div>
                             <div id="collapse{{ i + 1 }}" class="collapse">
-                                <div class="amenity_list">
+                                <div class="amenities">
                                     <h2>Amenities</h2>
                                     <ul>
                                         {% for amenity in attribute["amenities"] %}
@@ -138,17 +145,53 @@
                                         {% endfor %}
                                     </ul>
                                 </div>
+                                <div class="reviews">
+                                    {% set review = "Reviews" if attribute["reviews"] | length > 1 else "Review" %}
+                                    <h2>{{ attribute["reviews"] | length }} {{ review }}</h2>
+                                    <ul>
+                                        {% for review in attribute["reviews"] %}
+                                        <li><h3>From {{ review[0] }} the {{ review[1] }}</h3>
+                                            <p>{{ review[2] }}</p>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                    <div><a href="#place{{ i + 1 }}">Go back to "{{ place_name }}"</a></div>
+                                    <div><a href="#places">Home</a></div>
+                                </div>
                             </div>
                         </div>
                     </article>
+                    {% endif %}
                 {% endfor %}
             </div>
+
+            <!-- PAGE NAVIGATION SECTION -->
+            <nav aria-label="...">
+                <ul class="pagination">
+                    {% set state = "disabled" if page==1 else "active" %}
+                    <li class="page-item {{ state }}">
+                        <a class="page-link" href="{{ url_for('hbnb_homepage', page=page - 1) }}">
+                            Previous
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">{{ page }}</a>
+                    </li>
+                    {% set state = "disabled" if page==total_pages else "active" %}
+                    <li class="page-item {{ state }}">
+                        <a class="page-link" href="{{ url_for('hbnb_homepage', page=page + 1) }}">
+                            Next
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </section>
     </div>
 
 
     <!-- FOOTER -->
     <footer class="container-fluid text-center footer_container">
+        <div><a href="#places">Home</a></div>
         Holberton School
     </footer>
 </body>
