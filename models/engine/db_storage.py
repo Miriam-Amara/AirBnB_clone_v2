@@ -6,7 +6,9 @@ objects of AirBnB_clone system to a database.
 
 import os
 from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlalchemy import create_engine, select
+from sqlalchemy import create_engine, select, func
+from sqlalchemy.sql.expression import over
+
 from models.base_model import BaseModel, Base
 from models.amenity import Amenity
 from models.city import City
@@ -41,7 +43,7 @@ class DBStorage:
         if os.getenv("HBNB_ENV") == "test":
             Base.metadata.drop_all(self.__engine)
 
-    def all(self, cls=None):
+    def all(self, cls=None, current_page=None, page_size=None):
         """ Returns all objects of the given class or objects of all classes """
         objects = {}
         clsname = {
@@ -55,11 +57,28 @@ class DBStorage:
         if cls == None:
             for cls in clsname:
                 query = select(cls)
-                # print("\n", query, "\n")
                 cls_objects = self.__session.scalars(query).all()
                 for obj in cls_objects:
                     key = f"{clsname[cls]}.{obj.id}"
                     objects[key] = obj
+
+        # get paginated place objects and the total number of rows in the place table
+        elif cls == Place and current_page and page_size:
+            offset = (current_page - 1) * page_size
+            query = (
+                select(cls,func.count().over().label("total_rows"))
+                .limit(page_size)
+                .offset(offset)
+            )
+            # print("\n", query, "\n")
+            result = self.__session.execute(query).all()
+            total_rows = result[0][1]
+            for data in result:
+                obj = data[0]
+                key = f"{clsname[cls]}.{obj.id}"
+                objects[key] = obj
+            return objects, total_rows
+
 
         elif cls in clsname:
             query = select(cls)
@@ -107,3 +126,7 @@ class DBStorage:
 if __name__ == "__main__":
     storage = DBStorage()
     storage.reload()
+    # places, total_rows = storage.all(cls=Place, current_page=1, page_size=10)
+    # print(places)
+    # print(len(places))
+    # print("total rows: ", total_rows)

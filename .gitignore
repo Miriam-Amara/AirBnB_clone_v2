@@ -1,3 +1,4 @@
+.gitignore
 .git
 .venv
 __pycache__
@@ -6,3 +7,9 @@ models/engine/__pycache__
 tests/__pycache__
 tests/test_engine/__pycache__
 main_place_amenities.py
+file.json
+main.py
+7-dump.sql
+10-dump.sql
+100-dump.sql
+web_flask/example.py
