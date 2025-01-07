@@ -2,7 +2,7 @@
 
 /* ---------- COLORS --------- */
 /* 
-    #FFF, #DDD, #FF5A5F, #CCC, #484848, #FAFAFA
+    #FFF, #DDD, #FF5A5F, #CCC, #484848, #FAFAFA, #800080
 */
 
 
@@ -107,6 +107,9 @@ body{
     border: 1px solid #DDD;
 }
 
+.article a:hover{
+    color: #800080 !important;
+}
 
 /* ----- HEAD STYLE ----- */
 .head{
